@@ -1,0 +1,53 @@
+<idea-plugin version="2">
+  <id>com.weijde.idea.rascal.type_reporter</id>
+  <name>Type hint in Rascal format</name>
+  <version>1.0</version>
+  <vendor email="support@weijde.com" url="http://www.weijde.com">Weijde</vendor>
+
+  <description><![CDATA[
+      Prints the resolved type hints for all variables, functions, classes etc. in Rascal format.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      First version prints: map[loc, TypeSet];<br/>
+      Example: ( |php+class:///c|, {\C} )
+    ]]>
+  </change-notes>
+
+  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="131"/>
+
+  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+  <depends>com.jetbrains.php</depends>
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+
+    <!-- Extension below is disable for now, trying to run via the code inspections -->
+
+    <localInspection groupPath="Rascal" shortName="RascalTypeUsage" displayName="Type usage"
+                     groupName="TypeHint"
+                     enabledByDefault="true" level="WARNING"
+                     implementationClass="com.weijde.idea.rascal.TypeReporterInspection"/>
+
+
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>
