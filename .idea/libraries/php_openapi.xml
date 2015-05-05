@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="php-openapi">
+    <CLASSES>
+      <root url="jar:///Applications/PhpStorm 8.app/Contents/plugins/php/lib/php-openapi.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
