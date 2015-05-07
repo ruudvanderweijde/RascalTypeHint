@@ -9,24 +9,19 @@ import java.util.Set;
 
 public class RascalPhpType extends PhpType
 {
-    public static String RASCAL_TYPE_ARRAY = "\\arrayType(%s)";
-    public static String RASCAL_TYPE_CLASS = "\\classType(%s)";
+    public static String RASCAL_TYPE_ARRAY = "arrayType(%s)";
+    public static String RASCAL_TYPE_CLASS = "classType(%s)";
     public static final String RASCAL_TYPE_ANY = "\\any()";
-    public static final String RASCAL_TYPE_BOOL = "\\booleanType()";
-    public static final String RASCAL_TYPE_CALLABLE = "\\callableType()";
-    public static final String RASCAL_TYPE_FLOAT = "\\floatType()";
-    public static final String RASCAL_TYPE_INT = "\\integerType()";
-    public static final String RASCAL_TYPE_NUMBER = "\\numberType()";
-    public static final String RASCAL_TYPE_NULL = "\\nullType()";
-    public static final String RASCAL_TYPE_OBJECT = "\\objectType()";
-    public static final String RASCAL_TYPE_RESOURCE = "\\resourceType()";
-    public static final String RASCAL_TYPE_SCALAR = "\\scalarType()";
-    public static final String RASCAL_TYPE_STRING = "\\stringType()";
-
-    public void setPhpType(PhpType type)
-    {
-        super.add(type.filterUnknown());
-    }
+    public static final String RASCAL_TYPE_BOOL = "booleanType()";
+    public static final String RASCAL_TYPE_CALLABLE = "callableType()";
+    public static final String RASCAL_TYPE_FLOAT = "floatType()";
+    public static final String RASCAL_TYPE_INT = "integerType()";
+    public static final String RASCAL_TYPE_NUMBER = "numberType()";
+    public static final String RASCAL_TYPE_NULL = "nullType()";
+    public static final String RASCAL_TYPE_OBJECT = "objectType()";
+    public static final String RASCAL_TYPE_RESOURCE = "resourceType()";
+    public static final String RASCAL_TYPE_SCALAR = "scalarType()";
+    public static final String RASCAL_TYPE_STRING = "stringType()";
 
     public RascalPhpType(PhpType type) {
         super.add(type.filterUnknown());
@@ -38,7 +33,9 @@ public class RascalPhpType extends PhpType
         Set<String> rascalTypes = new HashSet<String>();
         Set<String> phpTypes = getTypes();
 
-        if (phpTypes.isEmpty()) { return RASCAL_TYPE_ANY; }
+        if (phpTypes.isEmpty()) {
+            return RASCAL_TYPE_ANY;
+        }
 
         for(String type: phpTypes) {
             rascalTypes.add(phpToRascal(type));
@@ -47,7 +44,8 @@ public class RascalPhpType extends PhpType
         return StringUtil.join(rascalTypes, ",");
     }
 
-    protected String phpToRascal(String type) {
+    protected String phpToRascal(String type)
+    {
         if (type.matches("^\\\\.*")) { // remove first backslash
             type = type.substring(1, type.length());
         }

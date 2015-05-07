@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>com.weijde.idea.rascal.type_reporter</id>
   <name>Type hint in Rascal format</name>
-  <version>1.0</version>
+  <version>0.1.1</version>
   <vendor email="support@weijde.com" url="http://www.weijde.com">Weijde</vendor>
 
   <description><![CDATA[
@@ -10,7 +10,7 @@
 
   <change-notes><![CDATA[
       First version prints: map[loc, TypeSet];<br/>
-      Example: ( |php+class:///c|, {\C} )
+      Example: <|php+gloablVar:///i|, {integerType()|stringType()}>
     ]]>
   </change-notes>
 

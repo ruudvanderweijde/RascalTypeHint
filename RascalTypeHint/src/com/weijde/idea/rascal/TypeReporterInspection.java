@@ -53,6 +53,6 @@ public class TypeReporterInspection extends LocalInspectionTool {
 
         String typeString = RascalUtil.printRascalTypes(element);
 
-        return String.format("(%s:{%s})", rascalLoction, typeString);
+        return String.format("<%s:{%s}>", rascalLoction, typeString);
     }
 }

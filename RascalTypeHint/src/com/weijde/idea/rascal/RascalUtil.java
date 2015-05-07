@@ -33,17 +33,15 @@ public class RascalUtil
         String format = "|php+%s://%s|";
 
         if (element instanceof PhpNamespace) {
-            return String.format(format, "namespace", replaceSlashes(((PhpNamespace) element).getFQN()));
+            return null; // do not print namespaces, because they will always resolve to any
+            //return String.format(format, "namespace", replaceSlashes(((PhpNamespace) element).getFQN()));
         }
 
         if (element instanceof PhpClass) {
             String type = "class";
-            if (((PhpClass) element).isTrait()) {
-                type = "trait";
-            }
-            if (((PhpClass) element).isInterface()) {
-                type = "interface";
-            }
+            if (((PhpClass) element).isTrait()) { type = "trait"; }
+            if (((PhpClass) element).isInterface()) { type = "interface"; }
+
             return String.format(format, type, getFullClassName((PhpClass) element));
         }
 
