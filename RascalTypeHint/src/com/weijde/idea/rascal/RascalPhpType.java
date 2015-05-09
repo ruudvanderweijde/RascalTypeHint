@@ -90,7 +90,7 @@ public class RascalPhpType extends PhpType
         }
 
         // the rest should be a class
-        String objectName = String.format("|php+object:///%s|", RascalUtil.replaceSlashes(type));
+        String objectName = String.format("|php+object:///%s|", RascalUtil.getFormattedNamespaceName(type));
         return String.format(RASCAL_TYPE_CLASS, objectName);
     }
 
