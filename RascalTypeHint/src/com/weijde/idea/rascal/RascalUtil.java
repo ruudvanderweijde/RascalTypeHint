@@ -1,11 +1,14 @@
 package com.weijde.idea.rascal;
 
+import com.intellij.psi.PsiElement;
 import com.jetbrains.php.lang.psi.PhpPsiUtil;
 import com.jetbrains.php.lang.psi.elements.*;
 import com.intellij.openapi.util.text.StringUtil;
+import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.beans.Introspector;
 import java.util.List;
 
 public class RascalUtil
@@ -34,28 +37,25 @@ public class RascalUtil
 
         if (element instanceof PhpNamespace) {
             return null; // do not print namespaces, because they will always resolve to any
-            //return String.format(format, "namespace", replaceSlashes(((PhpNamespace) element).getFQN()));
+            //return String.format(format, "namespace", getFormattedNamespaceName(((PhpNamespace) element).getFQN()));
         }
 
         if (element instanceof PhpClass) {
+            PhpClass clazz = (PhpClass) element;
             String type = "class";
-            if (((PhpClass) element).isTrait()) { type = "trait"; }
-            if (((PhpClass) element).isInterface()) { type = "interface"; }
+            if (clazz.isTrait()) { type = "trait"; }
+            if (clazz.isInterface()) { type = "interface"; }
 
-            return String.format(format, type, getFullClassName((PhpClass) element));
+            return String.format(format, type, getFullClassName(clazz));
         }
 
         // class method
         if (element instanceof Method) {
-            PhpClass inClass = ((Method) element).getContainingClass();
-
-            return String.format(format, "method", getFullClassName(inClass) + "/" + ((Method) element).getName());
+            return String.format(format, "method", getFullMethodName((Method) element));
         }
         // normal functions
         if (element instanceof Function) {
-            String namespaceName = ((Function) element).getNamespaceName();
-
-            return String.format(format, "function", replaceSlashes(namespaceName) + ((Function) element).getName());
+            return String.format(format, "function", getFullFunctionName((Function) element));
         }
 
         // class field
@@ -66,7 +66,7 @@ public class RascalUtil
             }
             List<String> names = StringUtil.split(fqn, ".");
 
-            return String.format(format, "classConstant", replaceSlashes(names.get(0)) + "/" + names.get(1));
+            return String.format(format, "classConstant", getFormattedNamespaceName(names.get(0)) + "/" + names.get(1));
         }
         if (element instanceof Constant) {
             String fqn = ((Constant) element).getFQN();
@@ -80,29 +80,54 @@ public class RascalUtil
         }
         // variables
         if (element instanceof Variable) {
-            String fqn = ((Variable) element).getFQN();
+            Variable variable = (Variable) element;
 
-            Function function = PhpPsiUtil.getParentByCondition(((Variable) element).getParent(), true, Function.INSTANCEOF, Method.INSTANCEOF);
+            Function function = PhpPsiUtil.getParentByCondition(variable.getParent(), true, Function.INSTANCEOF, Method.INSTANCEOF);
             if (function != null) {
-                String namespaceName = getNormalizedFQN(fqn);
-                if (namespaceName == null) return null;
-
-                return String.format(format, "functionVar", namespaceName + "/" + function.getName() + "/" + ((Variable) element).getName());
+                return String.format(format, "functionVar", getFullFunctionName(function) + "/" + variable.getName());
             }
 
-            Method method = PhpPsiUtil.getParentByCondition(((Variable) element).getParent(), true, Method.INSTANCEOF);
+            Method method = PhpPsiUtil.getParentByCondition(variable.getParent(), true, Method.INSTANCEOF);
             if (method != null) {
-                String namespaceName = getNormalizedFQN(fqn);
-                if (namespaceName == null) return null;
-
-                return String.format(format, "methodVar", namespaceName + "/" + method.getName() + "/" + ((Variable) element).getName());
+                return String.format(format, "methodVar", getFullMethodName(method) + "/" + variable.getName());
             }
-            String namespaceName = replaceSlashes(((Variable) element).getNamespaceName());
+            String namespaceName = getFormattedNamespaceName((variable).getNamespaceName());
 
-            return String.format(format, "globalVar", namespaceName + ((Variable) element).getName());
+            return String.format(format, "globalVar", namespaceName + variable.getName());
+        }
+
+        if (element instanceof Parameter) {
+            Parameter param = (Parameter) element;
+            PsiElement parent = ((Parameter) element).getParent().getParent();
+            if (parent instanceof Method) {
+                return String.format(format, "methodParam", getFullMethodName((Method) parent) + "/" + param.getName());
+            }
+            if (parent instanceof Function) {
+                return String.format(format, "functionParam", getFullFunctionName((Function) parent) + "/" + param.getName());
+            }
         }
 
         return null;
+    }
+
+    @NotNull
+    private static String getFullMethodName(Method method) {
+        PhpClass inClass = method.getContainingClass();
+
+        return getFullClassName(inClass) + "/" + method.getName().toLowerCase();
+    }
+
+    private static String getFullFunctionName(Function function) {
+        String namespaceName = function.getNamespaceName();
+        String functionName = function.isClosure() ? "__closure" : function.getName();
+
+        return getFormattedNamespaceName(namespaceName) + functionName.toLowerCase();
+    }
+
+    @Nullable
+    protected static String getCamelCase(String input)
+    {
+        return Introspector.decapitalize(WordUtils.capitalize(input).replaceAll("\\s", ""));
     }
 
     @NotNull
@@ -110,7 +135,7 @@ public class RascalUtil
         String namespaceName = element.getNamespaceName();
         String className = element.getName();
 
-        return replaceSlashes(namespaceName) + className.toLowerCase();
+        return getFormattedNamespaceName(namespaceName) + className.toLowerCase();
     }
 
     @Nullable
@@ -124,7 +149,7 @@ public class RascalUtil
     }
 
     @NotNull
-    public static String replaceSlashes(String namespaceName) {
+    public static String getFormattedNamespaceName(String namespaceName) {
         return namespaceName.replace("\\", "/").toLowerCase();
     }
 }
